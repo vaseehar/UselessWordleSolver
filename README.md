@@ -10,8 +10,8 @@ Run the Main class WordleApplication.java
 
 ## How to get guesses
 Hit the url **http://localhost:8081/getGuess1** to get the initial guess  
-Hit the url **http://localhost:8081/getNextGuess?pattern1=<pattern>** to get the subsequent guesses  
+Hit the url **http://localhost:8081/getNextGuess?pattern1= \<pattern>** to get the subsequent guesses  
 Note : <pattern> is the sequence of color patterns returned by wordle after a guess is made.  
 Enter b when it is grey , y when yellow ,g when green. 
-For example , use pattern as yybgb for the below image
+For example , use pattern as **yybgb** for the below image
 ![](https://github.com/vaseehar/UselessWordleSolver/blob/main/sample.png)
