@@ -1,8 +1,6 @@
 package com.wordle.contoller;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -24,14 +22,13 @@ public class WordleContoller {
 	List<String> possibleWordsList;
 
 	@GetMapping(value = "/getGuess1", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Map getGuess1() throws IOException, URISyntaxException {
+	public Map getGuess1() throws IOException {
 		Random random = new Random();
-		URL resource = WordleContoller.class.getResource("dictionary5_nyt.txt");
-		possibleWordsList = Files.readAllLines(Paths.get(resource.toURI()));
+		possibleWordsList = Files.readAllLines(Paths.get("path to dictionary5_nyt.txt"));
 		randomString = possibleWordsList.get(random.nextInt(possibleWordsList.size()));
 		greenMap = new HashMap<Integer, Character>();
 		Map<String, String> wordMap = new HashMap<>();
-		// randomString = "sport";
+		//randomString = "sport";
 		wordMap.put("Guess", randomString);
 		return wordMap;
 	}
