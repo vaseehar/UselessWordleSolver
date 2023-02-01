@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,41 +21,49 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class WordleContoller {
-	String randomString;
-	Map<Integer, Character> greenMap;
-	List<String> possibleWordsList;
+
+	@Autowired
+	HttpSession session;
 
 	@GetMapping(value = "/getGuess1", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Map getGuess1() throws IOException {
+	public Map getGuess1(HttpServletRequest request) throws IOException {
 		Random random = new Random();
-		possibleWordsList = Files.readAllLines(Paths.get("path to dictionary5_nyt.txt"));
+		session = request.getSession();
+		List<String> possibleWordsList;
+		possibleWordsList = Files.readAllLines(Paths.get("C:\\Users\\vaseehar\\Desktop\\dictionary5_nyt.txt"));
+		String randomString;
 		randomString = possibleWordsList.get(random.nextInt(possibleWordsList.size()));
-		greenMap = new HashMap<Integer, Character>();
+		Map<Integer, Character> greenMap = new HashMap<Integer, Character>();
 		Map<String, String> wordMap = new HashMap<>();
-		//randomString = "sport";
 		wordMap.put("Guess", randomString);
+		session.setAttribute("randomString", randomString);
+		session.setAttribute("possibleWordsList", possibleWordsList);
+		session.setAttribute("greenMap", greenMap);
 		return wordMap;
 	}
 
 	@PostMapping(value = "/getNextGuess", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Map getNextGuess(@RequestParam(name = "pattern1") String pattern1) throws IOException {
+	public Map getNextGuess(HttpServletRequest request, @RequestParam(name = "pattern1") String pattern1)
+			throws IOException {
 		Map<Integer, Character> blackMap = new HashMap<Integer, Character>();
 		Map<Integer, Character> yellowMap = new HashMap<Integer, Character>();
 		Random random = new Random();
+		session = request.getSession();
+		String randomString = (String) session.getAttribute("randomString");
+		Map<Integer, Character> greenMap = (Map<Integer, Character>) session.getAttribute("greenMap");
 		for (int i = 0; i < 5; i++) {
 			if (pattern1.charAt(i) == 'b') {
 				blackMap.put(i, randomString.charAt(i));
 				continue;
-			}
-			if (pattern1.charAt(i) == 'y') {
+			} else if (pattern1.charAt(i) == 'y') {
 				yellowMap.put(i, randomString.charAt(i));
 				continue;
-			}
-			if (pattern1.charAt(i) == 'g') {
+			} else if (pattern1.charAt(i) == 'g') {
 				greenMap.put(i, randomString.charAt(i));
 				continue;
 			}
 		}
+		List<String> possibleWordsList = (List<String>) session.getAttribute("possibleWordsList");
 		Iterator<String> iterator = possibleWordsList.iterator();
 		labelWhile: while (iterator.hasNext()) {
 			String word = iterator.next();
@@ -97,6 +109,8 @@ public class WordleContoller {
 			isEntireYNotPresent = !isEntireYPresent;
 		}
 		randomString = guess;
+		session.setAttribute("randomString", randomString);
+		session.setAttribute("possibleWordsList", possibleWordsList);
 		Map<String, String> guessMap = new HashMap<>();
 		guessMap.put("guess", guess);
 		return guessMap;
